@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scrollable Calendar — Team Demo</title>
+  <style>
+    :root {
+      --blue: #3b82f6;
+      --blue-light: #eff6ff;
+      --blue-dark: #1d4ed8;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --purple: #8b5cf6;
+      --purple-light: #f5f3ff;
+      --orange: #f59e0b;
+      --orange-light: #fffbeb;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-700);
+      line-height: 1.6;
+    }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: #fff;
+      padding: 48px 40px 40px;
+    }
+    header .label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      opacity: .75;
+      margin-bottom: 10px;
+    }
+    header h1 {
+      font-size: clamp(26px, 4vw, 42px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    header p {
+      font-size: 16px;
+      opacity: .85;
+      max-width: 640px;
+    }
+
+    /* ── Main layout ─────────────────────────────────────────── */
+    main {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 48px 28px 80px;
+      display: grid;
+      gap: 40px;
+    }
+
+    /* ── Section titles ──────────────────────────────────────── */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 20px;
+    }
+
+    /* ── Stat bar ────────────────────────────────────────────── */
+    .stat-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      box-shadow: var(--shadow);
+      border-top: 3px solid var(--blue);
+    }
+    .stat-card .num {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--blue-dark);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-card .desc { font-size: 13px; color: var(--gray-600); }
+
+    /* ── Pain points ─────────────────────────────────────────── */
+    .pain-points {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .pain-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 18px 20px 18px 52px;
+      box-shadow: var(--shadow);
+      font-size: 13.5px;
+      color: var(--gray-700);
+      line-height: 1.55;
+      position: relative;
+    }
+    .pain-card .pain-icon {
+      position: absolute;
+      left: 16px;
+      top: 18px;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    /* ── HOW section ─────────────────────────────────────────── */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .how-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 24px 26px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid transparent;
+    }
+    .how-card.blue   { border-color: var(--blue); }
+    .how-card.green  { border-color: var(--green); }
+    .how-card.purple { border-color: var(--purple); }
+    .how-card.red    { border-color: var(--red); }
+
+    .how-card .icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .blue   .icon { background: var(--blue-light); }
+    .green  .icon { background: var(--green-light); }
+    .purple .icon { background: var(--purple-light); }
+    .red    .icon { background: var(--red-light); }
+
+    .how-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 10px;
+    }
+    .how-card ul {
+      padding-left: 16px;
+      font-size: 13.5px;
+      color: var(--gray-600);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .how-card ul li { line-height: 1.5; }
+
+    /* code inline */
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11.5px;
+      background: var(--gray-100);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #6d28d9;
+    }
+
+    /* ── Perf table ──────────────────────────────────────────── */
+    .perf-table {
+      width: 100%;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border-collapse: collapse;
+      overflow: hidden;
+    }
+    .perf-table th, .perf-table td {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 13.5px;
+    }
+    .perf-table thead th {
+      background: var(--blue-dark);
+      color: #fff;
+      font-weight: 700;
+    }
+    .perf-table tbody tr:nth-child(even) { background: var(--gray-50); }
+    .perf-table tbody td:first-child { font-weight: 600; color: var(--gray-900); }
+    .pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .pill.green { background: var(--green-light); color: #065f46; }
+    .pill.blue  { background: var(--blue-light);  color: var(--blue-dark); }
+
+    /* ── Quotes ──────────────────────────────────────────────── */
+    .quotes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .quote-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      font-size: 13.5px;
+      color: var(--gray-700);
+      position: relative;
+    }
+    .quote-card::before {
+      content: '"';
+      position: absolute;
+      top: 10px; left: 16px;
+      font-size: 48px;
+      color: var(--gray-200);
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+    .quote-card p { padding-top: 20px; font-style: italic; margin-bottom: 10px; }
+    .quote-card .uid {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gray-400);
+      letter-spacing: .05em;
+    }
+
+    /* ── Feedback summary ──────────────────────────────────────── */
+    .feedback-summary {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    .feedback-summary p.intro {
+      font-size: 14px;
+      color: var(--gray-700);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .rating-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 700px) { .rating-grid { grid-template-columns: 1fr; } }
+    .rating-breakdown h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 14px;
+    }
+    .rating-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .rating-bar-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      width: 72px;
+      flex-shrink: 0;
+    }
+    .rating-bar-track {
+      flex: 1;
+      height: 22px;
+      background: var(--gray-100);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .rating-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding-left: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+    }
+    .rating-bar-fill.positive { background: var(--green); }
+    .rating-bar-fill.neutral  { background: var(--orange); }
+    .rating-bar-fill.negative { background: var(--red); }
+    .rating-bar-count {
+      font-size: 12px;
+      color: var(--gray-400);
+      width: 80px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .big-stat {
+      text-align: center;
+      padding: 20px;
+      background: var(--green-light);
+      border-radius: var(--radius);
+    }
+    .big-stat .big-num {
+      font-size: 48px;
+      font-weight: 800;
+      color: #065f46;
+      line-height: 1.1;
+    }
+    .big-stat .big-label {
+      font-size: 13px;
+      color: #065f46;
+      margin-top: 4px;
+    }
+    .big-stat .big-sub {
+      font-size: 12px;
+      color: var(--gray-400);
+      margin-top: 6px;
+    }
+
+    .improvement-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 22px 24px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--orange);
+      margin-bottom: 24px;
+    }
+    .improvement-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 10px;
+    }
+    .improvement-card ul {
+      padding-left: 18px;
+      font-size: 13.5px;
+      color: var(--gray-600);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .improvement-card ul li { line-height: 1.55; }
+    .improvement-card .note {
+      margin-top: 12px;
+      font-size: 12.5px;
+      color: var(--gray-400);
+      font-style: italic;
+    }
+    .sub-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: 14px;
+    }
+
+    /* ── Live demo ───────────────────────────────────────────── */
+    .demo-wrapper {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .demo-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: var(--gray-100);
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .demo-dots { display: flex; gap: 6px; }
+    .demo-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .demo-dot.red    { background: #f87171; }
+    .demo-dot.yellow { background: #fbbf24; }
+    .demo-dot.green  { background: #34d399; }
+    .demo-url {
+      flex: 1;
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--gray-600);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .demo-open-btn {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--blue-dark);
+      text-decoration: none;
+      background: var(--blue-light);
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .demo-open-btn:hover { background: #dbeafe; }
+    .demo-preview {
+      position: relative;
+      height: 340px;
+      background: linear-gradient(160deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .demo-preview:hover .demo-launch-btn { transform: scale(1.05); background: #1d4ed8; }
+    .demo-preview-icon { font-size: 56px; line-height: 1; }
+    .demo-preview-text {
+      color: rgba(255,255,255,.9);
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .demo-preview-text small {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      opacity: .7;
+      margin-top: 4px;
+    }
+    .demo-launch-btn {
+      background: var(--blue-dark);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 12px 28px;
+      border-radius: 8px;
+      transition: transform .15s, background .15s;
+      box-shadow: 0 4px 14px rgba(0,0,0,.25);
+    }
+    .demo-note {
+      font-size: 12px;
+      color: var(--gray-400);
+      padding: 8px 16px;
+      border-top: 1px solid var(--gray-100);
+      background: var(--gray-50);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header>
+  <div class="label">Team Demo · Scrollable Calendar</div>
+  <h1>Why & How We Built<br>the Scrollable Cross-Month Calendar</h1>
+  <p>Replacing next/prev navigation with an infinite vertical scroll + cross-month drag-selection for DSO creation.</p>
+</header>
+
+<main>
+
+  <!-- ── WHY: numbers ── -->
+  <section>
+    <div class="section-title">Why We Built It — The Signal</div>
+    <div class="stat-bar">
+      <div class="stat-card">
+        <div class="num">1.5M</div>
+        <div class="desc">Next CTA clicks in 30 days</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">13.8k</div>
+        <div class="desc">Unique users clicking Next</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">530k</div>
+        <div class="desc">Previous CTA clicks in 30 days</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">22.3k</div>
+        <div class="desc">Unique users clicking Previous</div>
+      </div>
+    </div>
+    <div class="pain-points">
+      <div class="pain-card">
+        <span class="pain-icon">⚠️</span>
+        When creating a DSO, users could only drag-select dates within a single visible month. Cross-month selections required opening the DSO modal and adjusting dates manually.
+      </div>
+      <div class="pain-card">
+        <span class="pain-icon">🔄</span>
+        Many users coming from competitor tools expected a smooth, continuous scrollable calendar — the month-by-month navigation felt unfamiliar and slow.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Journey ── -->
+  <section>
+    <div class="section-title">The Journey — 2–3 Quarters in the Making</div>
+    <div class="pain-points">
+      <div class="pain-card">
+        <span class="pain-icon">🚀</span>
+        <strong>Ravi kicked it off</strong> — initially experimented with building a fully custom calendar from scratch, bypassing FullCalendar entirely.
+      </div>
+      <div class="pain-card">
+        <span class="pain-icon">🧪</span>
+        <strong>First POC used a virtualizer</strong> — only ~4 months rendered at a time. Screen jittered during fast scrolling, white-space handling was tricky, and scrolling to a non-rendered month was complex since it didn't exist in the DOM.
+      </div>
+      <div class="pain-card">
+        <span class="pain-icon">🔄</span>
+        <strong>Pivoted to IntersectionObserver</strong> — switched to rendering all months in the DOM but lazily activating events via an observer, which eliminated the jitter and gave us smooth, predictable scrolling.
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Live demo ── -->
+  <section>
+    <div class="section-title">Live Demo</div>
+    <div class="demo-wrapper">
+      <div class="demo-toolbar">
+        <div class="demo-dots">
+          <div class="demo-dot red"></div>
+          <div class="demo-dot yellow"></div>
+          <div class="demo-dot green"></div>
+        </div>
+        <div class="demo-url">app.pricelabs.co/pricing?listings=test_delta2&amp;pms_name=test_pms_niha&amp;open_calendar=true</div>
+        <a class="demo-open-btn" href="https://app.pricelabs.co/pricing?listings=test_delta2&pms_name=test_pms_niha&open_calendar=true" target="_blank">Open ↗</a>
+      </div>
+      <a
+        class="demo-preview"
+        href="https://app.pricelabs.co/pricing?listings=test_delta2&pms_name=test_pms_niha&open_calendar=true"
+        target="_blank"
+        rel="noopener"
+      >
+        <div class="demo-preview-icon">🗓️</div>
+        <div class="demo-preview-text">
+          Click to open the scrollable calendar in a new tab
+          <small>app.pricelabs.co</small>
+        </div>
+        <div class="demo-launch-btn">Launch Demo ↗</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── HOW: cards ── -->
+  <section>
+    <div class="section-title">How We Implemented It — 4 Core Pieces</div>
+    <div class="how-grid">
+
+      <!-- 1 -->
+      <div class="how-card blue">
+        <div class="icon">📜</div>
+        <h3>1 · Vertical Scroll Architecture</h3>
+        <ul>
+          <li>All months rendered as stacked DOM elements inside a single scrollable <code>div</code>.</li>
+          <li>Removed Next/Previous buttons; the scroll container <em>is</em> the navigation.</li>
+        </ul>
+      </div>
+
+      <!-- 2 -->
+      <div class="how-card green">
+        <div class="icon">👁️</div>
+        <h3>2 · Lazy Event Rendering (IntersectionObserver)</h3>
+        <ul>
+          <li>Rendering events for all 12–24 months at once was too heavy on the browser.</li>
+          <li>We use an <code>IntersectionObserver</code> with a <strong>200 px buffer</strong> around the viewport — only nearby months load their events; the rest stay as lightweight shells.</li>
+          <li>Visibility changes are <strong>debounced 80 ms</strong> to prevent unnecessary re-renders during fast scroll.</li>
+        </ul>
+      </div>
+
+      <!-- 3 -->
+      <div class="how-card purple">
+        <div class="icon">🖱️</div>
+        <h3>3 · Cross-Month Drag Selection</h3>
+        <ul>
+          <li>Drag across month boundaries to select a date range — highlights update in real time.</li>
+          <li>Mouse events tracked on the whole document, so fast movement and scrolling mid-drag never break the selection.</li>
+        </ul>
+      </div>
+
+      <!-- 4 -->
+      <div class="how-card red">
+        <div class="icon">⚡</div>
+        <h3>4 · Auto-Scroll &amp; Performance</h3>
+        <ul>
+          <li>When dragging near the top or bottom edge of the calendar, it auto-scrolls smoothly — faster the closer you are to the edge.</li>
+          <li>Highlight updates are batched to run at most once per screen refresh, keeping the UI smooth even during fast drags.</li>
+          <li>If the selected date range hasn't changed, highlight work is skipped entirely — no wasted CPU.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Perf table ── -->
+  <section>
+    <div class="section-title">Performance Techniques at a Glance</div>
+    <table class="perf-table">
+      <thead>
+        <tr>
+          <th>Technique</th>
+          <th>What It Does</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lazy event rendering via IntersectionObserver</td>
+          <td>Only months near the viewport load events — dramatically reduces browser work on large calendars</td>
+          <td><span class="pill green">Rendering</span></td>
+        </tr>
+        <tr>
+          <td>Cell cache keyed by date</td>
+          <td>Day cells are looked up once and reused throughout the drag — no repeated DOM searches</td>
+          <td><span class="pill blue">Drag perf</span></td>
+        </tr>
+        <tr>
+          <td>Batched highlight updates (one per frame)</td>
+          <td>Highlight rendering is capped at screen refresh rate — stays smooth even during fast drags</td>
+          <td><span class="pill blue">Drag perf</span></td>
+        </tr>
+        <tr>
+          <td>Skip update when range is unchanged</td>
+          <td>If the cursor hasn't moved to a new date, all highlight work is skipped entirely</td>
+          <td><span class="pill blue">Drag perf</span></td>
+        </tr>
+        <tr>
+          <td>Auto-scroll speed scales with proximity</td>
+          <td>Scrolling accelerates the closer the pointer is to the edge — feels natural, not jarring</td>
+          <td><span class="pill green">UX</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── User feedback ── -->
+  <section>
+    <div class="section-title">Beta Feedback &amp; Ratings</div>
+
+    <!-- Summary -->
+    <div class="feedback-summary">
+      <p class="intro">
+        Based on the feedback collected from beta users, the scrollable calendar received
+        <strong>overwhelmingly positive ratings</strong>. Out of <strong>416 responses</strong>,
+        87.74% of users rated the feature 4 or 5 stars — with most negative responses related to
+        change management rather than fundamental usability issues.
+      </p>
+
+      <div class="rating-grid">
+        <div class="rating-breakdown">
+          <h4>Overall Rating Results</h4>
+          <div class="rating-bar-row">
+            <span class="rating-bar-label">Positive</span>
+            <div class="rating-bar-track">
+              <div class="rating-bar-fill positive" style="width:87.74%">87.74%</div>
+            </div>
+            <span class="rating-bar-count">365 users</span>
+          </div>
+          <div class="rating-bar-row">
+            <span class="rating-bar-label">Neutral</span>
+            <div class="rating-bar-track">
+              <div class="rating-bar-fill neutral" style="width:8.41%"></div>
+            </div>
+            <span class="rating-bar-count">35 users</span>
+          </div>
+          <div class="rating-bar-row">
+            <span class="rating-bar-label">Negative</span>
+            <div class="rating-bar-track">
+              <div class="rating-bar-fill negative" style="width:3.85%"></div>
+            </div>
+            <span class="rating-bar-count">16 users</span>
+          </div>
+        </div>
+        <div class="big-stat">
+          <div class="big-num">87.74%</div>
+          <div class="big-label">Positive (4 or 5 stars)</div>
+          <div class="big-sub">416 total responses</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Areas for improvement -->
+    <div class="improvement-card">
+      <h4>What We're Hearing From the Other 12%</h4>
+      <ul>
+        <li>Users wanting the previous/next button functionality restored</li>
+        <li>Dislike of extra white space after month ends</li>
+        <li>General preference for the non-scrollable version due to habit</li>
+      </ul>
+      <p class="note">The negative feedback primarily centered on change management rather than fundamental usability issues.</p>
+    </div>
+
+    <!-- Highlighted quotes -->
+    <div class="sub-title">User Feedback Highlights</div>
+    <div class="quotes-grid">
+      <div class="quote-card">
+        <p>I absolutely LOVE this feature. Kudos to the team who made this possible. I had made pricing much more smooth and we can work faster due to the scrolling calendar.</p>
+        <div class="uid">User 164138 · 25 properties</div>
+      </div>
+      <div class="quote-card">
+        <p>Bravo it's 10 times better. I think I save between 5 and 7 minutes per day thanks to this slide improvement.</p>
+        <div class="uid">User 165436 · 50 properties</div>
+      </div>
+      <div class="quote-card">
+        <p>Makes DSOs that span multiple months much easier, which was my biggest headache with it before.</p>
+        <div class="uid">User 317917 · 204 properties</div>
+      </div>
+      <div class="quote-card">
+        <p>It's nice to see the upcoming weeks as a whole vs having to toggle between months.</p>
+        <div class="uid">User 199646 · 26 properties</div>
+      </div>
+      <div class="quote-card">
+        <p>Good job. This new function made our team easier and faster monitoring than before.</p>
+        <div class="uid">User 12334 · 203 properties</div>
+      </div>
+      <div class="quote-card">
+        <p>You guys keep making everything better. Very thankful!</p>
+        <div class="uid">User 176176 · 4 properties</div>
+      </div>
+      <div class="quote-card">
+        <p>Thank you for always trying to make your product better!</p>
+        <div class="uid">User 17272 · 26 properties</div>
+      </div>
+      <div class="quote-card">
+        <p>It's really great, thanks.</p>
+        <div class="uid">User 319419 · 4 properties</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
